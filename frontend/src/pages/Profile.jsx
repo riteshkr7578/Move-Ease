@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api";
 
 export default function Profile() {
   const [user, setUser] = useState({
@@ -24,10 +24,7 @@ export default function Profile() {
 
   const fetchProfile = async () => {
     try {
-      const storedToken = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/user/me", {
-        headers: { Authorization: `Bearer ${storedToken}` }
-      });
+      const res = await api.get("/api/user/me");
       setUser(res.data.user);
       setPreview(res.data.user.profilePicture || `https://ui-avatars.com/api/?name=${res.data.user.name}&background=2563EB&color=fff`);
       setLoading(false);
@@ -59,10 +56,8 @@ export default function Profile() {
     }
 
     try {
-      const storedToken = localStorage.getItem("token");
-      const res = await axios.put("http://localhost:5000/api/user/me", formData, {
+      const res = await api.put("/api/user/me", formData, {
         headers: { 
-          Authorization: `Bearer ${storedToken}`,
           "Content-Type": "multipart/form-data" 
         }
       });

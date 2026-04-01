@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../api";
 import { useEffect, useState } from "react";
 
 export default function Dashboard() {
@@ -15,10 +15,8 @@ export default function Dashboard() {
     setUserRole(role.toLowerCase()); // ensure lowercase
   }
 
-  axios
-    .get("https://moveease-the-smartway-to-move.onrender.com/api/bookings", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  api
+    .get("/api/bookings")
     .then((res) => setBookings(res.data))
     .catch((err) => console.error("Bookings fetch failed:", err));
 }, []);
@@ -28,10 +26,9 @@ export default function Dashboard() {
   // Cancel Booking (Customer Only)
   const cancelBooking = async (id) => {
     try {
-      await axios.put(
-        `https://moveease-the-smartway-to-move.onrender.com/api/bookings/${id}/cancel`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.put(
+        `/api/bookings/${id}/cancel`,
+        {}
       );
       alert("Booking Cancelled!");
       window.location.reload();
@@ -43,10 +40,9 @@ export default function Dashboard() {
   // Update Status (Mover Only)
   const updateStatus = async (id, status) => {
     try {
-      await axios.put(
-        `https://moveease-the-smartway-to-move.onrender.com/api/bookings/${id}/status`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.put(
+        `/api/bookings/${id}/status`,
+        { status }
       );
       alert(`Booking ${status}!`);
       window.location.reload();
@@ -87,22 +83,38 @@ export default function Dashboard() {
                 🚚 {b.distance} km | 💰 ₹{b.estimatedCost}
               </p>
 
-              {/* Status Badge */}
-              <p
-                className={`mt-2 px-3 py-1 w-fit rounded text-white text-sm ${
-                  b.status === "pending"
-                    ? "bg-yellow-500"
-                    : b.status === "accepted"
-                    ? "bg-green-600"
-                    : b.status === "rejected"
-                    ? "bg-red-600"
-                    : "bg-gray-500"
-                }`}
-              >
-                Status: {b.status.toUpperCase()}
-              </p>
+              {/* Status Badges */}
+              <div className="flex gap-2 mt-2">
+                <p
+                  className={`px-3 py-1 rounded text-white text-sm font-medium ${
+                    b.status === "pending"
+                      ? "bg-yellow-500"
+                      : b.status === "accepted"
+                      ? "bg-green-600"
+                      : b.status === "rejected"
+                      ? "bg-red-600"
+                      : "bg-gray-500"
+                  }`}
+                >
+                  Status: {b.status.toUpperCase()}
+                </p>
 
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {b.paymentStatus && (
+                  <p
+                    className={`px-3 py-1 rounded text-white text-sm font-medium ${
+                      b.paymentStatus === "paid"
+                        ? "bg-blue-600"
+                        : b.paymentStatus === "pay_later"
+                        ? "bg-orange-500"
+                        : "bg-gray-400"
+                    }`}
+                  >
+                    Payment: {b.paymentStatus === "pay_later" ? "PAY AT PICKUP" : b.paymentStatus.toUpperCase()}
+                  </p>
+                )}
+              </div>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                 📅 {new Date(b.createdAt).toLocaleString()}
               </p>
 

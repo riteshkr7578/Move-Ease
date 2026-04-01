@@ -1,7 +1,7 @@
 import SearchMovers from "../components/SearchMovers";
 import MoversList from "../components/MoversList";
 import { useState, useRef } from "react";
-import axios from "axios";
+import api from "../api";
 import { Link } from "react-router-dom";
 import Reveal from "../components/Reveal";
 
@@ -14,7 +14,7 @@ export default function Home() {
     console.log("User search:", filters);
 
     try {
-      const res = await axios.get("https://moveease-the-smartway-to-move.onrender.com/api/movers", {
+      const res = await api.get("/api/movers", {
         params: { city: filters.fromCity }  // 🔥 Pass city to backend
       });
 

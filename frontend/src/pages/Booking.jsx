@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api"; // Assuming frontend/src/api.js is here
+import axios from "axios"; // keep axios for external calls if needed or remove if strictly using api
 
 export default function Booking() {
   const [searchParams] = useSearchParams();
@@ -22,7 +23,7 @@ export default function Booking() {
 
     const fetchMover = async () => {
       try {
-        const res = await axios.get(`https://moveease-the-smartway-to-move.onrender.com/api/movers/${moverId}`);
+        const res = await api.get(`/api/movers/${moverId}`);
         setMover(res.data);
         
       } catch (err) {
@@ -57,7 +58,7 @@ const calculateDistance = async () => {
   }
 
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/google/distance`, {
+    const res = await api.get("/api/google/distance", {
       params: {
         origins: pickup,
         destinations: drop,
@@ -92,29 +93,93 @@ const calculateDistance = async () => {
 
 
   // Submit Booking
-  const handleBooking = async () => {
+  const handleBooking = async (paymentOption) => {
     if (!distance) return alert("Calculate distance first!");
 
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
 
     try {
-      await axios.post(
-        "https://moveease-the-smartway-to-move.onrender.com/api/bookings",
+      // 1. Create booking in DB
+      const res = await api.post(
+        "/api/bookings",
         {
           moverId,
           pickupLocation: pickup,
           dropLocation: drop,
           distance: Number(distance),
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+          paymentStatus: paymentOption === "pay_later" ? "pay_later" : "pending",
+        }
       );
 
-      alert("Booking Confirmed! 🎉");
-      navigate("/dashboard");
+      const bookingId = res.data.booking._id;
+
+      // 2. Handle payment based on selection
+      if (paymentOption === "pay_later") {
+        alert("Booking Confirmed (Pay Later)! 🎉");
+        return navigate("/dashboard");
+      }
+
+      // If "pay_now", initialize Razorpay
+      handleRazorpayPayment(bookingId, token);
+
     } catch (err) {
       console.error("Booking failed:", err);
       alert("Booking failed!");
+    }
+  };
+
+  const handleRazorpayPayment = async (bookingId, token) => {
+    try {
+      // Create Razorpay Order
+      const { data } = await api.post(
+        "/api/bookings/razorpay/create-order",
+        { bookingId }
+      );
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_SYA2kB8C6pkOB3", // Frontend key test mode
+        amount: data.order.amount,
+        currency: "INR",
+        name: "MoveEase",
+        description: "Payment for Booking",
+        order_id: data.order.id,
+        handler: async function (response) {
+          try {
+            await api.post(
+              "/api/bookings/razorpay/verify",
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                bookingId: bookingId,
+              }
+            );
+            alert("Payment Successful! Booking Accepted 🎉");
+            navigate("/dashboard");
+          } catch (verifyErr) {
+            console.error(verifyErr);
+            alert("Payment Verification Failed. Please contact support.");
+            navigate("/dashboard");
+          }
+        },
+        prefill: {
+          name: "Customer",
+          email: "customer@example.com",
+        },
+        theme: {
+          color: "#2563EB",
+        },
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.on("payment.failed", function (response) {
+        alert("Payment Failed. Reason: " + response.error.description);
+      });
+      razorpayInstance.open();
+    } catch (err) {
+      console.error("Razorpay order creation failed:", err);
+      alert("Failed to initialize payment gateway!");
     }
   };  
 
@@ -159,12 +224,24 @@ const calculateDistance = async () => {
   </p>
 )}
 
-        <button
-          onClick={handleBooking}
-          className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
-        >
-          Confirm Booking
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 mt-6">
+          <button
+            onClick={() => handleBooking("pay_later")}
+            className="flex-1 bg-yellow-500 text-white p-3 rounded-lg hover:bg-yellow-600 transition font-bold disabled:opacity-50"
+            disabled={!distance}
+          >
+            Pay Later (at Pickup)
+          </button>
+
+          <button
+            onClick={() => handleBooking("pay_now")}
+            className="flex-1 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition font-bold disabled:opacity-50"
+            disabled={!distance}
+            title="Pay securely via Razorpay"
+          >
+            Pay Now 💳
+          </button>
+        </div>
       </div>
     </div>
   );

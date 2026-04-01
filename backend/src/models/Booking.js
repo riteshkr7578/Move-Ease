@@ -25,6 +25,18 @@ const BookingSchema = new mongoose.Schema({
     default: "pending"
   },
 
+  paymentStatus: {
+    type: String,
+    enum: ["pending", "paid", "pay_later"],
+    default: "pending"
+  },
+  razorpayOrderId: {
+    type: String,
+  },
+  razorpayPaymentId: {
+    type: String,
+  },
+
   createdAt: {
     type: Date,
     default: Date.now
