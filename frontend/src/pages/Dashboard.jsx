@@ -57,9 +57,9 @@ export default function Dashboard() {
 
   return (
   
-    <div className="max-w-4xl mx-auto mt-20">
+    <div className="max-w-4xl mx-auto mt-20 min-h-screen transition-colors duration-300">
       
-      <h2 className="text-2xl font-bold mb-6">My Bookings</h2>
+      <h2 className="text-2xl font-bold mb-6 dark:text-white">My Bookings</h2>
       
 
 
@@ -68,22 +68,22 @@ export default function Dashboard() {
 
 
       {bookings.length === 0 ? (
-        <p className="text-gray-600">No bookings yet!</p>
+        <p className="text-gray-600 dark:text-gray-400">No bookings yet!</p>
       ) : (
         <div className="space-y-4">
           {bookings.map((b) => (
             <div
               key={b._id}
-              className="border p-5 rounded-lg shadow-sm bg-white"
+              className="border p-5 rounded-lg shadow-sm bg-white dark:bg-gray-800 dark:border-gray-700 transition-colors duration-300"
             >
-              <p className="font-semibold text-lg text-blue-600">
+              <p className="font-semibold text-lg text-blue-600 dark:text-blue-400">
                 {b.mover?.name}
               </p>
 
-              <p className="text-gray-700">Pickup: {b.pickupLocation}</p>
-              <p className="text-gray-700">Drop: {b.dropLocation}</p>
+              <p className="text-gray-700 dark:text-gray-300">Pickup: {b.pickupLocation}</p>
+              <p className="text-gray-700 dark:text-gray-300">Drop: {b.dropLocation}</p>
 
-              <p className="mt-2 font-semibold">
+              <p className="mt-2 font-semibold dark:text-gray-100">
                 🚚 {b.distance} km | 💰 ₹{b.estimatedCost}
               </p>
 
@@ -102,7 +102,7 @@ export default function Dashboard() {
                 Status: {b.status.toUpperCase()}
               </p>
 
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 📅 {new Date(b.createdAt).toLocaleString()}
               </p>
 

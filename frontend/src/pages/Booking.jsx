@@ -115,15 +115,15 @@ export default function Booking() {
   };  
 
   return (
-    <div className="max-w-3xl mx-auto mt-28 bg-white shadow-lg p-8 rounded-xl">
-      <h2 className="text-2xl font-bold mb-6">Confirm Your Booking</h2>
+    <div className="max-w-3xl mx-auto mt-28 bg-white dark:bg-gray-800 shadow-lg p-8 rounded-xl transition-colors duration-300">
+      <h2 className="text-2xl font-bold mb-6 dark:text-white">Confirm Your Booking</h2>
 
       {mover ? (
-        <p className="mb-4 font-semibold">
-          Selected Mover: <span className="text-blue-600">{mover.name}</span>
+        <p className="mb-4 font-semibold dark:text-gray-200">
+          Selected Mover: <span className="text-blue-600 dark:text-blue-400">{mover.name}</span>
         </p>
       ) : (
-        <p className="text-gray-500">Loading mover information...</p>
+        <p className="text-gray-500 dark:text-gray-400">Loading mover information...</p>
       )}
 
       <div className="space-y-5">
@@ -131,33 +131,33 @@ export default function Booking() {
           ref={pickupRef}
           type="text"
           placeholder="Pickup Location"
-          className="w-full p-3 border rounded-lg"
+          className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         />
 
         <input
           ref={dropRef}
           type="text"
           placeholder="Drop Location"
-          className="w-full p-3 border rounded-lg"
+          className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         />
 
         <button
           onClick={calculateDistance}
-          className="w-full bg-gray-900 text-white p-3 rounded-lg hover:bg-black"
+          className="w-full bg-gray-900 text-white p-3 rounded-lg hover:bg-black dark:bg-gray-700 dark:hover:bg-gray-600 transition"
         >
           Calculate Distance
         </button>
 
        {distance && (
-  <p className="font-semibold text-lg mt-3">
+  <p className="font-semibold text-lg mt-3 dark:text-white">
     🚚 Distance: {distance} km — Estimated Cost:{" "}
-    <span className="text-green-600 font-bold">₹ :{estimatedCost}</span>
+    <span className="text-green-600 dark:text-green-400 font-bold">₹ :{estimatedCost}</span>
   </p>
 )}
 
         <button
           onClick={handleBooking}
-          className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
         >
           Confirm Booking
         </button>

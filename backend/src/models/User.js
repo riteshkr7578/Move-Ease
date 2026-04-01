@@ -19,6 +19,16 @@ const UserSchema = new mongoose.Schema({
     select: false, // don't send password in queries unless requested
   },
 
+  phone: {
+    type: String,
+    default: "",
+  },
+
+  profilePicture: {
+    type: String, // URL of the uploaded image
+    default: "",
+  },
+
 role: {
   type: String,
   enum: ["customer", "mover"],

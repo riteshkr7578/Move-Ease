@@ -42,10 +42,10 @@ export default function Reviews() {
   return (
     <>
   
-      <section className="bg-white py-20 px-4 sm:px-8">
+      <section className="bg-white dark:bg-gray-900 py-20 px-4 sm:px-8 transition-colors duration-300 min-h-screen">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl font-bold text-slate-800 mb-4">Customer Reviews</h1>
-          <p className="text-lg text-slate-600 mb-12">
+          <h1 className="text-4xl font-bold text-slate-800 dark:text-white mb-4">Customer Reviews</h1>
+          <p className="text-lg text-slate-600 dark:text-gray-300 mb-12">
             Hear directly from people who’ve moved with MoveEase
           </p>
 
@@ -53,22 +53,22 @@ export default function Reviews() {
             {reviews.map((review, index) => (
               <div
                 key={index}
-                className="bg-slate-50 p-8 rounded-2xl shadow-lg border border-slate-100 text-left min-h-[280px] hover:shadow-2xl transition"
+                className="bg-slate-50 dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-slate-100 dark:border-gray-700 text-left min-h-[280px] hover:shadow-2xl transition"
               >
                 <div className="flex items-center gap-5 mb-5">
                   <img
                     src={review.avatar}
                     alt={review.name}
-                    className="h-14 w-14 rounded-full object-cover border"
+                    className="h-14 w-14 rounded-full object-cover border dark:border-gray-600"
                   />
                   <div>
-                    <p className="text-lg font-semibold text-slate-800">
+                    <p className="text-lg font-semibold text-slate-800 dark:text-white">
                       {review.name}
                     </p>
-                    <p className="text-sm text-slate-500">{review.location}</p>
+                    <p className="text-sm text-slate-500 dark:text-gray-400">{review.location}</p>
                   </div>
                 </div>
-                <p className="text-slate-700 text-base leading-relaxed italic">
+                <p className="text-slate-700 dark:text-gray-300 text-base leading-relaxed italic">
                   “{review.text}”
                 </p>
               </div>

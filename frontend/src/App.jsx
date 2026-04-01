@@ -12,6 +12,7 @@ import Help from "./pages/Help";
 import HomeShifting from "./pages/HomeShifting";
 import OfficeShifting from "./pages/OfficeShifting";
 import VehicleTransport from "./pages/VehicleTransport";
+import Profile from "./pages/Profile";
 
 
 function App() {
@@ -30,6 +31,15 @@ function App() {
           <Route path="/services/home-shifting" element={<HomeShifting />} />
           <Route path="/services/office-shifting" element={<OfficeShifting />} />
   <Route path="/services/vehicle-transport" element={<VehicleTransport />} />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/booking"

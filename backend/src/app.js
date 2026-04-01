@@ -1,10 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const path = require("path");
 const moverRoutes = require("./routes/mover");
 const bookingRoutes = require("./routes/booking");
 
 const app = express();
+
+// Serve static uploads
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // middlewares
 app.use(cors());
