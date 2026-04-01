@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const Mover = require("../models/Mover"); // Added
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -24,8 +25,19 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password: hashed,
-      role,
+      role: role || "customer",
     });
+
+    // If role is 'mover', also create a placeholder entry in Mover collection
+    if (role === "mover") {
+      await Mover.create({
+        owner: user._id,
+        name: user.name, // Use user's name as initial business name
+        city: "Not specified", // Placeholder to be updated in Mover Panel
+        basePrice: 0,
+        pricePerKm: 0
+      });
+    }
 
     // generate token
     const token = jwt.sign(

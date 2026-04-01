@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../api";
 import Select from "react-select";
 
 export default function SearchMovers({ onSearch }) {
@@ -6,15 +7,23 @@ export default function SearchMovers({ onSearch }) {
   const [toCity, setToCity] = useState("");
   const [moveType, setMoveType] = useState("");
   const [services, setServices] = useState([]);
+  const [cityOptions, setCityOptions] = useState([]);
 
-  const cityOptions = [
-    { value: "Mumbai", label: "Mumbai" },
-    { value: "Delhi", label: "Delhi" },
-    { value: "Bangalore", label: "Bangalore" },
-    { value: "Hyderabad", label: "Hyderabad" },
-    { value: "Chennai", label: "Chennai" },
-    { value: "Kolkata", label: "Kolkata" },
-  ];
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const res = await api.get("/api/movers/cities/all");
+        const options = res.data.map((city) => ({
+          value: city,
+          label: city,
+        }));
+        setCityOptions(options);
+      } catch (err) {
+        console.error("Failed to fetch cities", err);
+      }
+    };
+    fetchCities();
+  }, []);
 
   const toggleService = (service) => {
     if (services.includes(service)) {
@@ -27,6 +36,11 @@ export default function SearchMovers({ onSearch }) {
   const handleSubmit = () => {
     if (!fromCity) {
       alert("Please select a city before comparing movers");
+      return;
+    }
+
+    if (!moveType) {
+      alert("Please select a move type");
       return;
     }
     
@@ -107,7 +121,10 @@ export default function SearchMovers({ onSearch }) {
             <option>Home Shifting</option>
             <option>Office Shifting</option>
             <option>Vehicle Transport</option>
+            <option>International Relocation</option>
+            <option>Industrial Shifting</option>
             <option>Storage &amp; Warehouse</option>
+            <option>Other</option>
           </select>
         </div>
 

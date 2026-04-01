@@ -8,13 +8,14 @@ const MoverSchema = new mongoose.Schema({
   },
 
   name: { type: String, required: true }, // Mover company name
-  city: { type: String, required: true }, // Main city / base location
+  city: { type: String, default: "Not specified" }, // Main city / base location
 
-  basePrice: { type: Number, required: true }, // minimum base price
-  pricePerKm: { type: Number, required: true }, // price per kilometer
+  basePrice: { type: Number, default: 0 }, // optional for initial creation
+  pricePerKm: { type: Number, default: 0 }, // optional for initial creation
 
   rating: { type: Number, default: 4.5 },
   totalReviews: { type: Number, default: 0 },
+  serviceAreas: { type: [String], default: [] }, // Array of cities served
 
   createdAt: { type: Date, default: Date.now }
 });

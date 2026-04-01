@@ -4,6 +4,7 @@ const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
 const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 
 // Set up storage engine for multer
 const storage = multer.diskStorage({
@@ -69,6 +70,33 @@ router.put("/me", auth, upload.single("profilePicture"), async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message || "Server Error" });
+  }
+});
+
+// Change Password Route
+router.put("/change-password", auth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    // Get user with password
+    const user = await User.findById(req.user._id).select("+password");
+
+    // Check current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Incorrect current password" });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    await user.save();
+    res.json({ message: "Password updated successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

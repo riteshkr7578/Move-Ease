@@ -55,6 +55,28 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+// GET bookings for a mover (Mover only)
+router.get("/mover", auth, async (req, res) => {
+  try {
+    const mover = await Mover.findOne({ owner: req.user._id });
+    if (!mover) {
+      return res.status(404).json({ msg: "Mover profile not found" });
+    }
+
+    // Use a more flexible query to ensure the ID match is found
+    const bookings = await Booking.find({ 
+      mover: { $in: [mover._id, mover._id.toString()] } 
+    })
+      .populate("customer", "name email phone")
+      .sort({ createdAt: -1 });
+
+    res.json(bookings);
+  } catch (err) {
+    console.error("Fetch mover bookings error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
 /**
  * ----------------------------------------
  * RAZORPAY INTEGRATION

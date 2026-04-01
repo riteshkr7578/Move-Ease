@@ -15,6 +15,8 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
+  const [passwordStatus, setPasswordStatus] = useState({ error: "", success: "" });
 
   // Automatically configure Axios with Bearer token globally via api.js if you are using it (assuming yes). 
   // Let's use direct headers if not.
@@ -80,6 +82,18 @@ export default function Profile() {
       setMessage("Error updating profile. Please try again.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordStatus({ error: "", success: "" });
+    try {
+      await api.put("/api/user/change-password", passwordData);
+      setPasswordStatus({ error: "", success: "Password updated successfully!" });
+      setPasswordData({ currentPassword: "", newPassword: "" });
+    } catch (err) {
+      setPasswordStatus({ error: err.response?.data?.message || "Failed to update password", success: "" });
     }
   };
 
@@ -191,6 +205,47 @@ export default function Profile() {
               </button>
             </div>
           </form>
+
+          {/* Change Password Section */}
+          <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-700">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Change Password</h3>
+            
+            {passwordStatus.error && <p className="text-red-500 mb-4">{passwordStatus.error}</p>}
+            {passwordStatus.success && <p className="text-green-500 mb-4">{passwordStatus.success}</p>}
+
+            <form onSubmit={handleChangePassword} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-col">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Current Password</label>
+                  <input 
+                    type="password" 
+                    value={passwordData.currentPassword}
+                    onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                    className="p-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+                  <input 
+                    type="password" 
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                    className="p-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <button 
+                  type="submit" 
+                  className="px-8 py-3 bg-gray-800 dark:bg-gray-700 hover:bg-black dark:hover:bg-gray-600 text-white font-medium rounded-lg shadow-sm transition-all"
+                >
+                  Update Password
+                </button>
+              </div>
+            </form>
+          </div>
 
         </div>
       </div>

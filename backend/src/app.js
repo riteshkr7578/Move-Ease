@@ -18,11 +18,14 @@ app.use(morgan("dev"));
 // ROUTES
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const adminRoutes = require("./routes/admin"); // Added
+
 app.use("/api/movers", moverRoutes);
 app.use("/api/bookings", bookingRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/admin", adminRoutes); // Added
 
 // test root
 app.get("/", (req, res) => {

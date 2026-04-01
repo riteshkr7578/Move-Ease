@@ -13,7 +13,8 @@ import HomeShifting from "./pages/HomeShifting";
 import OfficeShifting from "./pages/OfficeShifting";
 import VehicleTransport from "./pages/VehicleTransport";
 import Profile from "./pages/Profile";
-
+import AdminDashboard from "./pages/AdminDashboard";
+import MoverDashboard from "./pages/MoverDashboard";
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
       <div className="pt-24">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/mover-panel" element={<ProtectedRoute><MoverDashboard /></ProtectedRoute>} />
           <Route path="/find-movers" element={<FindMovers />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />

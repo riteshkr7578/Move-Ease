@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Sun, Moon, User, ChevronDown, LogOut, LayoutDashboard, Truck, Settings } from "lucide-react";
 import { BASE_URL } from "../api";
 
 export default function Navbar() {
@@ -55,10 +56,10 @@ export default function Navbar() {
           <div className="relative group cursor-pointer py-2">
             <span className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
               Services 
-              <svg className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+              <ChevronDown size={14} className="transition-transform duration-200 group-hover:rotate-180" />
             </span>
 
-            <div className="absolute top-full left-0 hidden group-hover:block bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700 mt-0 rounded-xl w-60 p-2 z-50 transition-all opacity-0 group-hover:opacity-100">
+            <div className="absolute top-full left-0 hidden group-hover:block bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700 mt-0 rounded-xl w-64 p-2 z-50 transition-all opacity-0 group-hover:opacity-100">
               <Link to='/services/home-shifting' className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                 <span className="text-xl bg-blue-100 dark:bg-gray-900 p-1.5 rounded-md">🏠</span> 
                 <span className="font-medium text-[15px]">Home Shifting</span>
@@ -76,22 +77,22 @@ export default function Navbar() {
 
           <Link to="/reviews" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Customer Reviews</Link>
           <Link to="/help" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Help & Support</Link>
-          
-          <button 
-            onClick={toggleDarkMode} 
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-semibold transition-all shadow-sm"
-            title="Toggle Theme"
-          >
-            {darkMode ? (
-              <><span className="text-yellow-500 text-lg leading-none">☀️</span> <span className="hidden lg:inline text-gray-700 dark:text-gray-300">Light</span></>
-            ) : (
-              <><span className="text-blue-400 text-lg leading-none">🌙</span> <span className="hidden lg:inline text-gray-700 dark:text-gray-300">Dark</span></>
-            )}
-          </button>
         </div>
 
         {/* Right Auth/Profile Section */}
         <div className="hidden md:flex items-center gap-4">
+          {/* Dark Mode Toggle */}
+          <button 
+            onClick={toggleDarkMode} 
+            className="p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 shadow-sm"
+            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {darkMode ? (
+              <Sun size={20} className="text-yellow-500 animate-pulse" />
+            ) : (
+              <Moon size={20} className="text-blue-500" />
+            )}
+          </button>
 
           {!user ? (
             <>
@@ -127,37 +128,52 @@ export default function Navbar() {
 
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     onClick={() => setProfileOpen(false)}
                   >
-                    My Profile
+                    <User size={18} className="text-blue-500" />
+                    <span>My Profile</span>
                   </Link>
 
                   {user.role === "customer" && (
                     <Link
                       to="/dashboard"
-                      className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                       onClick={() => setProfileOpen(false)}
                     >
-                      My Bookings
+                      <LayoutDashboard size={18} className="text-green-500" />
+                      <span>My Bookings</span>
                     </Link>
                   )}
 
                   {user.role === "mover" && (
                     <Link
-                      to="/mover-dashboard"
-                      className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      to="/mover-panel"
+                      className="flex items-center gap-3 px-4 py-2.5 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                       onClick={() => setProfileOpen(false)}
                     >
-                      My Business
+                      <Truck size={18} className="text-orange-500" />
+                      <span>Mover Panel</span>
+                    </Link>
+                  )}
+
+                  {user.role === "admin" && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-3 px-4 py-2.5 text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
+                      onClick={() => setProfileOpen(false)}
+                    >
+                      <Settings size={18} className="text-purple-500" />
+                      <span>Admin Panel</span>
                     </Link>
                   )}
 
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 transition-colors mt-1 border-t border-gray-100 dark:border-gray-700 pt-2"
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors mt-1 border-t border-gray-100 dark:border-gray-700 pt-2"
                   >
-                    Logout
+                    <LogOut size={18} />
+                    <span>Logout</span>
                   </button>
 
                 </div>
