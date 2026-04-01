@@ -2,11 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-<<<<<<< HEAD
   "main": "src/server.js",
-=======
-"main": "src/server.js",
->>>>>>> 8605aed3c3c24a5c751866d6db3f57217f159454
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server.js",
