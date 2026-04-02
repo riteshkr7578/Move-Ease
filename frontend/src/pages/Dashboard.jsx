@@ -57,7 +57,7 @@ export default function Dashboard() {
       const { order, booking } = res.data;
 
       const options = {
-        key: "rzp_test_SYA2kB8C6pkOB3",
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
         currency: order.currency,
         name: "MoveEase",
