@@ -552,31 +552,30 @@ export default function Home() {
     {/* Quick Links */}
     <div>
       <h3 className="text-xl font-semibold text-white mb-4">Quick Links</h3>
-      <ul className="space-y-2">
-        <li className="hover:text-white cursor-pointer">Home</li>
-        <li className="hover:text-white cursor-pointer">Find Movers</li>
-        <li className="hover:text-white cursor-pointer">Reviews</li>
-        <li className="hover:text-white cursor-pointer">FAQs</li>
+      <ul className="space-y-2 flex flex-col items-start">
+        <Link to="/" className="hover:text-white transition-colors">Home</Link>
+        <Link to="/find-movers" className="hover:text-white transition-colors">Find Movers</Link>
+        <Link to="/reviews" className="hover:text-white transition-colors">Customer Reviews</Link>
+        <Link to="/help" className="hover:text-white transition-colors">Help & Support</Link>
       </ul>
     </div>
 
     {/* Services */}
     <div>
       <h3 className="text-xl font-semibold text-white mb-4">Services</h3>
-      <ul className="space-y-2">
-        <li className="hover:text-white cursor-pointer">Home Shifting</li>
-        <li className="hover:text-white cursor-pointer">Office Relocation</li>
-        <li className="hover:text-white cursor-pointer">Vehicle Transport</li>
-        <li className="hover:text-white cursor-pointer">Packing & Storage</li>
+      <ul className="space-y-2 flex flex-col items-start">
+        <Link to="/services/home-shifting" className="hover:text-white transition-colors">Home Shifting</Link>
+        <Link to="/services/office-shifting" className="hover:text-white transition-colors">Office Shifting</Link>
+        <Link to="/services/vehicle-transport" className="hover:text-white transition-colors">Vehicle Transport</Link>
       </ul>
     </div>
 
     {/* Contact */}
     <div>
       <h3 className="text-xl font-semibold text-white mb-4">Contact Us</h3>
-      <p className="text-gray-400">📍Jaipur, India</p>
-      <p className="text-gray-400">📞 +91 98765 43210</p>
-      <p className="text-gray-400">📧 support@moveease.com</p>
+      <p className="text-gray-400 mb-2">📍 Jaipur, India</p>
+      <a href="tel:+919876543210" className="block text-gray-400 hover:text-white mb-2 transition-colors">📞 +91 98765 43210</a>
+      <a href="mailto:support@moveease.com" className="block text-gray-400 hover:text-white mb-2 transition-colors">📧 support@moveease.com</a>
 
       {/* Social Icons */}
       <div className="flex gap-4 mt-4">

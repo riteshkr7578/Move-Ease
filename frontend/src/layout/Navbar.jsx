@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Sun, Moon, User, ChevronDown, LogOut, LayoutDashboard, Truck, Settings } from "lucide-react";
 import { BASE_URL } from "../api";
@@ -7,10 +7,21 @@ export default function Navbar() {
   const [openMenu, setOpenMenu] = useState(false); // Mobile menu
   const [profileOpen, setProfileOpen] = useState(false); // Profile dropdown
   const [user, setUser] = useState(null);
+  const profileRef = useRef(null);
   const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark" ||
-      (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    localStorage.getItem("theme") === "dark" || !("theme" in localStorage)
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const loadUser = () => {
@@ -111,7 +122,7 @@ export default function Navbar() {
               <Link to="/signup" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">Sign Up</Link>
             </>
           ) : (
-            <div className="relative">
+            <div className="relative" ref={profileRef}>
               {/* PROFILE ICON */}
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
