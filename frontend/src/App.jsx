@@ -1,5 +1,6 @@
 import Navbar from "./layout/Navbar";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Home from "./pages/Home";
 import FindMovers from "./pages/FindMovers";
 import Signup from "./pages/Auth/Signup";
@@ -17,11 +18,17 @@ import AdminDashboard from "./pages/AdminDashboard";
 import MoverDashboard from "./pages/MoverDashboard";
 
 function App() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
     <>
       <Navbar />
 
-      <div className="pt-24">
+      <div className="pt-[72px]">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
