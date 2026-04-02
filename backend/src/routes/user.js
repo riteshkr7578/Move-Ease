@@ -48,8 +48,8 @@ router.put("/me", auth, upload.single("profilePicture"), async (req, res) => {
 
     // Check if there's a new file uploaded
     if (req.file) {
-      // Create full URL (assuming your backend runs on same domain or we just save path)
-      const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+      // Save relative path, frontend will prepend BASE_URL
+      const imageUrl = `/uploads/${req.file.filename}`;
       user.profilePicture = imageUrl;
     }
 

@@ -28,7 +28,7 @@ export default function Profile() {
     try {
       const res = await api.get("/api/user/me");
       setUser(res.data.user);
-      setPreview(res.data.user.profilePicture || `https://ui-avatars.com/api/?name=${res.data.user.name}&background=2563EB&color=fff`);
+      setPreview(null);
       setLoading(false);
     } catch (err) {
       console.error("Failed to load profile", err);
@@ -58,11 +58,7 @@ export default function Profile() {
     }
 
     try {
-      const res = await api.put("/api/user/me", formData, {
-        headers: { 
-          "Content-Type": "multipart/form-data" 
-        }
-      });
+      const res = await api.put("/api/user/me", formData);
       
       // Update local storage with new details (if needed by Navbar)
       const currentUserData = JSON.parse(localStorage.getItem("user"));
