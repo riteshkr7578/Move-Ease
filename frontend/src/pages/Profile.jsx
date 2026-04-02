@@ -33,6 +33,7 @@ export default function Profile() {
       const currentUserData = JSON.parse(localStorage.getItem("user")) || {};
       const updatedUser = { ...currentUserData, ...res.data.user };
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      window.dispatchEvent(new Event("userUpdated"));
       
       setPreview(null);
       setLoading(false);
@@ -67,17 +68,17 @@ export default function Profile() {
       const res = await api.put("/api/user/me", formData);
       
       // Update local storage with new details (if needed by Navbar)
-      const currentUserData = JSON.parse(localStorage.getItem("user"));
+      const currentUserData = JSON.parse(localStorage.getItem("user")) || {};
       const updatedUser = { ...currentUserData, ...res.data.user };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       
+      // Dispatch custom event to notify Navbar without reload
+      window.dispatchEvent(new Event("userUpdated"));
+      
       setUser(res.data.user);
       setMessage("Profile updated successfully!");
-      
-      // Force reload to update Navbar avatar immediately, or use Context (Context is better but simple window.location.reload is fast)
-      setTimeout(() => {
-         window.location.reload();
-      }, 1500);
+      setFile(null); // Clear selected file state
+      setPreview(null); // Clear preview
 
     } catch (err) {
       console.error(err);

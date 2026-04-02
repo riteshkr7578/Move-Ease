@@ -48,8 +48,8 @@ router.put("/me", auth, upload.single("profilePicture"), async (req, res) => {
 
     // Check if there's a new file uploaded
     if (req.file) {
-      // Save absolute path directly to Render server to ensure it is always fetched from there
-      const imageUrl = `https://moveease-the-smartway-to-move.onrender.com/uploads/${req.file.filename}`;
+      // Save relative path so it works with any BASE_URL (localhost or render)
+      const imageUrl = `/uploads/${req.file.filename}`;
       user.profilePicture = imageUrl;
     }
 

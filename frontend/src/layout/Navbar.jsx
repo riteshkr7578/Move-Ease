@@ -13,10 +13,21 @@ export default function Navbar() {
   );
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const loadUser = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+    
+    loadUser(); // Load initially
+
+    // Listen for custom event when profile updates via same window
+    window.addEventListener("userUpdated", loadUser);
+    
+    return () => {
+      window.removeEventListener("userUpdated", loadUser);
+    };
   }, []);
 
   useEffect(() => {
