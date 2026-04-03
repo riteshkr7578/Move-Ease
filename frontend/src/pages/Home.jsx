@@ -1,14 +1,24 @@
 import SearchMovers from "../components/SearchMovers";
 import MoversList from "../components/MoversList";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import api from "../api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Reveal from "../components/Reveal";
 
 
 export default function Home() {
   const [movers, setMovers] = useState([]);
   const moversListRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === "admin") {
+      navigate("/admin");
+    } else if (role === "mover") {
+      navigate("/mover-panel");
+    }
+  }, [navigate]);
 
   const handleSearch = async (filters) => {
     console.log("User search:", filters);

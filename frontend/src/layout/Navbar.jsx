@@ -71,34 +71,51 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8 text-gray-700 dark:text-gray-300 font-medium">
-          <Link to="/" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Home</Link>
-          <Link to="/find-movers" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Find Movers</Link>
-
-          {/* Dropdown: Services */}
-          <div className="relative group cursor-pointer py-2">
-            <span className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
-              Services 
-              <ChevronDown size={14} className="transition-transform duration-200 group-hover:rotate-180" />
-            </span>
-
-            <div className="absolute top-full left-0 hidden group-hover:block bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700 mt-0 rounded-xl w-64 p-2 z-50 transition-all opacity-0 group-hover:opacity-100">
-              <Link to='/services/home-shifting' onClick={() => setOpenMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                <span className="text-xl bg-blue-100 dark:bg-gray-900 p-1.5 rounded-md">🏠</span> 
-                <span className="font-medium text-[15px]">Home Shifting</span>
+          {user?.role === "admin" ? (
+            <>
+              <Link to="/admin" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center gap-1">
+                <LayoutDashboard size={18} /> Admin Panel
               </Link>
-              <Link to='/services/office-shifting' onClick={() => setOpenMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mt-1">
-                <span className="text-xl bg-blue-100 dark:bg-gray-900 p-1.5 rounded-md">🏢</span> 
-                <span className="font-medium text-[15px]">Office Shifting</span>
+              <Link to="/reviews" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Manage Reviews</Link>
+            </>
+          ) : user?.role === "mover" ? (
+            <>
+              <Link to="/mover-panel" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center gap-1">
+                <Truck size={18} /> Mover Panel
               </Link>
-              <Link to='/services/vehicle-transport' onClick={() => setOpenMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mt-1">
-                <span className="text-xl bg-blue-100 dark:bg-gray-900 p-1.5 rounded-md">🚚</span> 
-                <span className="font-medium text-[15px]">Vehicle Transport</span>
-              </Link>
-            </div>
-          </div>
+            </>
+          ) : (
+            <>
+              <Link to="/" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Home</Link>
+              <Link to="/find-movers" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Find Movers</Link>
 
-          <Link to="/reviews" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Customer Reviews</Link>
-          <Link to="/help" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Help & Support</Link>
+              {/* Dropdown: Services */}
+              <div className="relative group cursor-pointer py-2">
+                <span className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                  Services 
+                  <ChevronDown size={14} className="transition-transform duration-200 group-hover:rotate-180" />
+                </span>
+
+                <div className="absolute top-full left-0 hidden group-hover:block bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700 mt-0 rounded-xl w-64 p-2 z-50 transition-all opacity-0 group-hover:opacity-100">
+                  <Link to='/services/home-shifting' onClick={() => setOpenMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <span className="text-xl bg-blue-100 dark:bg-gray-900 p-1.5 rounded-md">🏠</span> 
+                    <span className="font-medium text-[15px]">Home Shifting</span>
+                  </Link>
+                  <Link to='/services/office-shifting' onClick={() => setOpenMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mt-1">
+                    <span className="text-xl bg-blue-100 dark:bg-gray-900 p-1.5 rounded-md">🏢</span> 
+                    <span className="font-medium text-[15px]">Office Shifting</span>
+                  </Link>
+                  <Link to='/services/vehicle-transport' onClick={() => setOpenMenu(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mt-1">
+                    <span className="text-xl bg-blue-100 dark:bg-gray-900 p-1.5 rounded-md">🚚</span> 
+                    <span className="font-medium text-[15px]">Vehicle Transport</span>
+                  </Link>
+                </div>
+              </div>
+
+              <Link to="/reviews" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Customer Reviews</Link>
+              <Link to="/help" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Help & Support</Link>
+            </>
+          )}
         </div>
 
         {/* Right Auth/Profile Section */}
