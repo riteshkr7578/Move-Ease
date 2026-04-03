@@ -29,25 +29,6 @@ export default function Home() {
         params: { city: filters.fromCity }  // 🔥 Pass city to backend
       });
       setMovers(res.data);
-      if (moversListRef.current) {
-        moversListRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    } catch (error) {
-      console.error("Search error:", error);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <SEO 
-        title="Home - Best Packers and Movers Near You"
-        description="MoveEase helps you find the most reliable and affordable packers and movers for your next relocation. Compare and book top-rated moving services today."
-        keywords="packers and movers service, local moving company, home relocation, office shifting, move ease"
-      />
-      <Navbar />
-      <section className="relative overflow-hidden pt-20 pb-12 lg:pt-32 lg:pb-20">
-
-      setMovers(res.data);
       console.log("Movers from backend:", res.data);
       
       // Update URL with filters so moveType is preserved when booking
@@ -68,11 +49,15 @@ export default function Home() {
     }
   };
 
-
   return (
-  
-    <div>
-
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <SEO 
+        title="Home - Best Packers and Movers Near You"
+        description="MoveEase helps you find the most reliable and affordable packers and movers for your next relocation. Compare and book top-rated moving services today."
+        keywords="packers and movers service, local moving company, home relocation, office shifting, move ease"
+      />
+      <Navbar />
+      
       {/* HERO SECTION */}
       <section className="pt-10 pb-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">

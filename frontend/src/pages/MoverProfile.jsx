@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+﻿import { useParams, Link } from "react-router-dom";
 import { Star, MapPin, CheckCircle, Shield, Truck, Clock } from "lucide-react";
 import SEO from "../components/SEO";
 
@@ -25,20 +25,13 @@ export default function MoverProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 pb-12 transition-colors duration-300">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-10 transition-colors duration-300">
       <SEO 
         title={`${mover.name} - Professional Movers in ${mover.location}`}
         description={mover.description}
         keywords={`packers and movers ${mover.location}, ${mover.name}, relocation services`}
         ogType="profile"
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        "https://images.pexels.com/photos/4246120/pexels-photo-4246120.jpeg"
-    ]
-  };
-
-  return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-10 transition-colors duration-300">
       <div className="max-w-5xl mx-auto px-6">
         
         {/* Header Section */}
