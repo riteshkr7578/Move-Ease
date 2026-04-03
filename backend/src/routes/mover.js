@@ -104,4 +104,56 @@ router.get("/cities/all", async (req, res) => {
   }
 });
 
+// Cashout: Transfer wallet balance to bank (Simulation)
+router.post("/cashout", auth, async (req, res) => {
+  try {
+    const mover = await Mover.findOne({ owner: req.user._id });
+    if (!mover) return res.status(404).json({ msg: "Mover not found" });
+
+    const cashoutAmount = mover.wallet.balance;
+    if (cashoutAmount <= 0) return res.status(400).json({ msg: "No balance available for cashout" });
+
+    // Deduct from balance
+    mover.wallet.balance = 0;
+    
+    // Add to ledger
+    mover.ledger.push({
+      amount: cashoutAmount,
+      type: "payout",
+      description: `Cashout processed (Payout of ₹${cashoutAmount.toLocaleString()})`
+    });
+
+    await mover.save();
+    res.json({ msg: "Cashout successful!", balance: 0, ledger: mover.ledger });
+  } catch (err) {
+    res.status(500).json({ msg: "Cashout failed" });
+  }
+});
+
+// Pay Commission: Pay the platform for cash bookings (Simulation)
+router.post("/pay-commission", auth, async (req, res) => {
+  try {
+    const mover = await Mover.findOne({ owner: req.user._id });
+    if (!mover) return res.status(404).json({ msg: "Mover not found" });
+
+    const amountToPay = mover.wallet.commissionOwed;
+    if (amountToPay <= 0) return res.status(400).json({ msg: "No commission owed" });
+
+    // Deduct from commissionOwed
+    mover.wallet.commissionOwed = 0;
+    
+    // Add to ledger as deduction
+    mover.ledger.push({
+      amount: amountToPay,
+      type: "deduction",
+      description: `Commission paid to platform for cash bookings`
+    });
+
+    await mover.save();
+    res.json({ msg: "Commission paid successfully!", commissionOwed: 0, ledger: mover.ledger });
+  } catch (err) {
+    res.status(500).json({ msg: "Commission payment failed" });
+  }
+});
+
 module.exports = router;

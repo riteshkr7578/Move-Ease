@@ -110,8 +110,57 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard icon={<Users className="text-blue-600" />} label="Total Customers" value={stats?.totalUsers || 0} color="bg-blue-50 dark:bg-blue-900/20" />
           <StatCard icon={<Truck className="text-green-600" />} label="Active Movers" value={stats?.totalMovers || 0} color="bg-green-50 dark:bg-green-900/20" />
-          <StatCard icon={<Calendar className="text-purple-600" />} label="Total Bookings" value={stats?.totalBookings || 0} color="bg-purple-50 dark:bg-purple-900/20" />
-          <StatCard icon={<IndianRupee className="text-orange-600" />} label="Total GMV" value={`₹${(stats?.totalRevenue || 0).toLocaleString()}`} color="bg-orange-50 dark:bg-orange-900/20" />
+          <StatCard icon={<IndianRupee className="text-purple-600" />} label="Total GMV" value={`₹${(stats?.totalGMV || 0).toLocaleString()}`} color="bg-purple-50 dark:bg-purple-900/20" />
+          <StatCard icon={<TrendingUp className="text-orange-600" />} label="Platform Revenue" value={`₹${(stats?.totalPlatformRevenue || 0).toLocaleString()}`} color="bg-orange-50 dark:bg-orange-900/20" />
+        </div>
+
+        {/* Forecast Banner */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-xl flex items-center justify-between mb-10 overflow-hidden relative">
+           <div className="relative z-10">
+              <h3 className="text-lg font-medium opacity-80">Revenue Forecast</h3>
+              <p className="text-3xl font-bold mt-1">₹{(stats?.forecastedRevenue || 0).toLocaleString()} <span className="text-sm font-normal opacity-70 ml-2">Estimated from pending/upcoming bookings</span></p>
+           </div>
+           <TrendingUp size={120} className="absolute right-[-20px] top-[-20px] opacity-10 rotate-12" />
+           <div className="bg-white/10 p-3 rounded-full hover:bg-white/20 transition-all cursor-pointer">
+              <RefreshCcw size={24} className="hover:rotate-180 transition-transform duration-500" onClick={fetchData} />
+           </div>
+        </div>
+
+        {/* Add Section for Recent Bookings or Full Reports */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 p-8 mb-10">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <Calendar className="text-blue-600" size={24} />
+            Recent Platform Activity
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead className="border-b dark:border-gray-700">
+                <tr>
+                  <th className="pb-4 font-black uppercase text-[10px] text-gray-400">Customer</th>
+                  <th className="pb-4 font-black uppercase text-[10px] text-gray-400">Mover</th>
+                  <th className="pb-4 font-black uppercase text-[10px] text-gray-400">Date</th>
+                  <th className="pb-4 font-black uppercase text-[10px] text-gray-400">Value (GMV)</th>
+                  <th className="pb-4 font-black uppercase text-[10px] text-gray-400 text-right">Commission</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y dark:divide-gray-700">
+                {stats?.recentBookings?.map(booking => (
+                  <tr key={booking._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                    <td className="py-4 text-sm font-medium">{booking.customer?.name || "Deleted User"}</td>
+                    <td className="py-4 text-sm text-gray-600 dark:text-gray-400">{booking.mover?.name || "Unknown Mover"}</td>
+                    <td className="py-4 text-sm text-gray-500">{new Date(booking.createdAt).toLocaleDateString()}</td>
+                    <td className="py-4 text-sm font-bold">₹{booking.estimatedCost?.toLocaleString()}</td>
+                    <td className="py-4 text-sm font-black text-green-600 dark:text-green-400 text-right">+₹{booking.platformFee?.toLocaleString()}</td>
+                  </tr>
+                ))}
+                {(!stats?.recentBookings || stats.recentBookings.length === 0) && (
+                  <tr>
+                    <td colSpan="5" className="py-10 text-center text-gray-400">No recent activity detected</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Lists Section */}

@@ -20,6 +20,8 @@ const BookingSchema = new mongoose.Schema({
 
   distance: { type: Number, required: true },  // in km
   estimatedCost: { type: Number, required: true },
+  platformFee: { type: Number, default: 0 },
+  moverEarnings: { type: Number, default: 0 },
 
   status: {
     type: String,

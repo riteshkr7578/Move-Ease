@@ -21,6 +21,21 @@ const MoverSchema = new mongoose.Schema({
     default: ["Home Shifting", "Office Shifting", "Vehicle Transport"] 
   }, // Types of services offered
 
+  wallet: {
+    balance: { type: Number, default: 0 }, // Ready for payout (Online payments)
+    pending: { type: Number, default: 0 }, // Upcoming or in-progress
+    commissionOwed: { type: Number, default: 0 } // For cash transactions (10% of total)
+  },
+
+  ledger: [{
+    booking: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
+    amount: { type: Number },
+    type: { type: String, enum: ["earning", "commission", "payout", "deduction"] },
+    paymentMethod: { type: String, enum: ["online", "cash"] },
+    description: { type: String },
+    date: { type: Date, default: Date.now }
+  }],
+
   createdAt: { type: Date, default: Date.now }
 });
 

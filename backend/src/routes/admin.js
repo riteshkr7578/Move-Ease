@@ -12,6 +12,16 @@ router.get("/stats", auth, admin, async (req, res) => {
     const totalUsers = await User.countDocuments({ role: "customer" });
     const totalMovers = await User.countDocuments({ role: "mover" });
     const totalBookings = await Booking.countDocuments();
+    
+    // Calculate real GMV and Platform Revenue
+    const bookings = await Booking.find({ paymentStatus: "paid" });
+    const totalGMV = bookings.reduce((sum, b) => sum + (b.estimatedCost || 0), 0);
+    const totalPlatformRevenue = bookings.reduce((sum, b) => sum + (b.platformFee || 0), 0);
+
+    // Revenue Forecast (Simple prediction based on average of last 30 days pending bookings)
+    const pendingBookings = await Booking.find({ paymentStatus: { $ne: "paid" }, status: { $ne: "cancelled" } });
+    const forecastedRevenue = pendingBookings.reduce((sum, b) => sum + (b.platformFee || 0), 0);
+
     const recentBookings = await Booking.find()
       .populate("customer", "name email") // Changed from "user" to "customer"
       .populate("mover", "name")
@@ -22,6 +32,9 @@ router.get("/stats", auth, admin, async (req, res) => {
       totalUsers,
       totalMovers,
       totalBookings,
+      totalGMV,
+      totalPlatformRevenue,
+      forecastedRevenue,
       recentBookings
     });
   } catch (err) {
