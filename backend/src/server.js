@@ -15,7 +15,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: [
     "http://localhost:5173", // Local frontend
-    "https://moveease-the-smartway-to-move.onrender.com/" 
+    "https://mvease.vercel.app", // Active Vercel frontend
+    "https://moveease-the-smartway-to-move.onrender.com" 
   ],
   methods: "GET,POST,PUT,DELETE",
   credentials: true,

@@ -5,30 +5,28 @@ const multer = require("multer");
 const path = require("path");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // Set up storage engine for multer
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, "uploads/");
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "move-ease-profiles",
+    allowedFormats: ["jpeg", "jpg", "png", "webp", "avif"],
   },
-  filename: function(req, file, cb) {
-    cb(null, req.user._id + "-" + Date.now() + path.extname(file.originalname));
-  }
 });
 
 const upload = multer({
   storage: storage,
   limits: { fileSize: 5000000 }, // limit 5MB
-  fileFilter: function(req, file, cb) {
-    const filetypes = /jpeg|jpg|png|webp|avif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-      cb(new Error("Images only! (jpeg, jpg, png, webp, avif)"));
-    }
-  }
 });
 
 // TEST: Get current user's profile
@@ -48,8 +46,8 @@ router.put("/me", auth, upload.single("profilePicture"), async (req, res) => {
 
     // Check if there's a new file uploaded
     if (req.file) {
-      // Save relative path so it works with any BASE_URL (localhost or render)
-      const imageUrl = `/uploads/${req.file.filename}`;
+      // Save Cloudinary path directly
+      const imageUrl = req.file.path;
       user.profilePicture = imageUrl;
     }
 
