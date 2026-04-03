@@ -1,5 +1,15 @@
+import { useEffect, useState } from "react";
 
 export default function Reviews() {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.role === "admin") {
+      setIsAdmin(true);
+    }
+  }, []);
+
   const reviews = [
     {
       name: "Priya",
@@ -75,14 +85,16 @@ export default function Reviews() {
             ))}
           </div>
 
-          <div className="mt-16 text-center">
-            <a
-              href="/get-quote"
-              className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-medium px-8 py-3 rounded-full transition"
-            >
-              Start Your Move
-            </a>
-          </div>
+          {!isAdmin && (
+            <div className="mt-16 text-center">
+              <a
+                href="/find-movers"
+                className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold px-10 py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 uppercase tracking-wider"
+              >
+                Start Your Move
+              </a>
+            </div>
+          )}
         </div>
       </section>
     </>

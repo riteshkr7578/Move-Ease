@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api";
-import { Truck, MapPin, DollarSign, Save, ClipboardList, Package, User } from "lucide-react";
+import { Truck, MapPin, DollarSign, Save, ClipboardList, Package, User, CheckCircle, TrendingUp, Wallet, ArrowUpRight, Clock } from "lucide-react";
 
 export default function MoverDashboard() {
   const [moverData, setMoverData] = useState({
@@ -79,6 +79,12 @@ export default function MoverDashboard() {
     setMoverData({ ...moverData, [e.target.name]: e.target.value });
   };
 
+  const calculateEarnings = () => {
+    return bookings
+      .filter(b => b.status === "completed")
+      .reduce((acc, curr) => acc + (curr.estimatedCost || 0), 0);
+  };
+
   const toggleService = (service) => {
     let currentServices = [...moverData.services];
     if (currentServices.includes(service)) {
@@ -121,27 +127,73 @@ export default function MoverDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 pb-20">
       {/* HEADER SECTION */}
-      <section className="pt-28 pb-10 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 transition-colors duration-300">
+      <section className="pt-4 pb-6 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight dark:text-white uppercase italic">Mover Dashboard</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2 font-medium">Manage your business, services, and track your bookings in one place.</p>
+              <h1 className="text-4xl font-extrabold tracking-tight dark:text-white uppercase italic underline decoration-blue-600 underline-offset-8">Business Panel</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-4 font-medium">Overview of your logistics empire.</p>
             </div>
-            <div className="flex gap-4">
+            
+            <div className="grid grid-cols-2 gap-4">
               <div className="bg-blue-50 dark:bg-blue-900/20 px-6 py-4 rounded-2xl border border-blue-100 dark:border-blue-800 flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-500/20">
                   {bookings.length}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest">Active Bookings</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Total requests received</p>
+                  <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest">Jobs</p>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase">Active Projects</p>
+                </div>
+              </div>
+              <div className="bg-green-50 dark:bg-green-900/20 px-6 py-4 rounded-2xl border border-green-100 dark:border-green-800 flex items-center gap-4">
+                <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-green-500/20">
+                   <Wallet size={20}/>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-widest">Earnings</p>
+                  <p className="text-sm font-black">₹{calculateEarnings().toLocaleString()}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* QUICK ANALYTICS */}
+      <div className="max-w-7xl mx-auto px-6 mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-2xl"><TrendingUp size={24}/></div>
+                <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase">Growth Rate</p>
+                    <p className="text-xl font-black">+14.2%</p>
+                </div>
+            </div>
+            <ArrowUpRight className="text-green-500" />
+        </div>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-orange-100 dark:bg-orange-900/30 text-orange-600 rounded-2xl"><Clock size={24}/></div>
+                <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase">Avg Response</p>
+                    <p className="text-xl font-black">2.4 hrs</p>
+                </div>
+            </div>
+            <span className="text-[10px] font-bold text-blue-500 p-1 bg-blue-50 dark:bg-blue-900/20 rounded">TOP 5%</span>
+        </div>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-pink-100 dark:bg-pink-900/30 text-pink-600 rounded-2xl"><User size={24}/></div>
+                <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase">Client Rating</p>
+                    <p className="text-xl font-black">4.9/5.0</p>
+                </div>
+            </div>
+            <div className="flex gap-0.5">
+                {[1,2,3,4,5].map(s => <div key={s} className="w-1.5 h-4 bg-yellow-400 rounded-full"></div>)}
+            </div>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-6 mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
@@ -335,7 +387,11 @@ export default function MoverDashboard() {
                         </div>
                         <div className="flex items-center justify-between">
                           <p className="text-xs font-bold text-gray-400">DATE</p>
-                          <p className="text-sm font-bold dark:text-gray-300">{new Date(booking.bookingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                          <p className="text-sm font-bold dark:text-gray-300">
+                            {booking.bookingDate 
+                              ? new Date(booking.bookingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                              : "Date not selected"}
+                          </p>
                         </div>
                       </div>
                     </div>

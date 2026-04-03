@@ -76,13 +76,16 @@ export default function Navbar() {
               <Link to="/admin" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center gap-1">
                 <LayoutDashboard size={18} /> Admin Panel
               </Link>
+              <Link to="/admin/analytics" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Analytics</Link>
               <Link to="/reviews" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Manage Reviews</Link>
             </>
           ) : user?.role === "mover" ? (
             <>
               <Link to="/mover-panel" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center gap-1">
-                <Truck size={18} /> Mover Panel
+                <Truck size={18} /> Business Panel
               </Link>
+              <Link to="/mover/payouts" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Payouts</Link>
+              <Link to="/mover/tracking" onClick={() => setOpenMenu(false)} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">Live Tracking</Link>
             </>
           ) : (
             <>
