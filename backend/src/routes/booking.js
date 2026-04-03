@@ -278,8 +278,8 @@ router.put("/:id/status", auth, async (req, res) => {
     }
 
     if (status === "completed" && booking.status !== "completed") {
-      const mover = await Mover.findById(booking.mover._id);
-      if (mover) {
+      const moverProfile = await Mover.findById(booking.mover._id || booking.mover);
+      if (moverProfile) {
         // Ensure values exist (Fallback if fee calc wasn't in booking schema originally)
         const total = booking.estimatedCost || 0;
         const earning = booking.moverEarnings || (total * 0.9);
@@ -287,29 +287,43 @@ router.put("/:id/status", auth, async (req, res) => {
 
         if (booking.paymentStatus === "paid") {
           // ONLINE: Add 90% share to the withdrawable balance
-          mover.wallet.balance += earning;
-          mover.ledger.push({
+          moverProfile.wallet.balance = (moverProfile.wallet.balance || 0) + earning;
+          moverProfile.ledger.push({
             booking: booking._id,
             amount: earning,
             type: "earning",
-            paymentStatus: "completed",
             paymentMethod: "online",
             description: `Online Earning from #${booking._id.toString().slice(-6)} (90%)`
           });
         } else {
           // CASH: Customer pays Mover directly.
-          // Mover keeps 100% physically, but only 90% is "Earning".
-          // The 10% is platform revenue they owe.
-          mover.ledger.push({
+          moverProfile.ledger.push({
             booking: booking._id,
-            amount: earning,
+            amount: total,
             type: "earning",
             paymentMethod: "cash",
-            description: `Cash Earning from #${booking._id.toString().slice(-6)} (90%)`
+            description: `Cash Job #${booking._id.toString().slice(-6)}: Total Received`
           });
-          mover.wallet.commissionOwed += fee; // Platform tracks what it needs to collect
+          
+          const cashCommission = total * 0.1;
+          moverProfile.ledger.push({
+            booking: booking._id,
+            amount: cashCommission,
+            type: "deduction",
+            paymentMethod: "cash",
+            description: `Auto-Deduction: Platform Fee (10%) for Cash Job #${booking._id.toString().slice(-6)}`
+          });
+
+          // Deduct from online balance to cover cash job commission
+          moverProfile.wallet.balance = (moverProfile.wallet.balance || 0) - cashCommission; 
+          moverProfile.wallet.commissionOwed = (moverProfile.wallet.commissionOwed || 0) + cashCommission;
         }
-        await mover.save();
+
+        // Save mover changes
+        await moverProfile.save();
+        console.log(`Updated wallet for Mover ${moverProfile.name}. New Balance: ${moverProfile.wallet.balance}`);
+      } else {
+        console.error("Mover profile not found for booking:", booking._id);
       }
     }
 

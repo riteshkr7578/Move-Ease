@@ -100,8 +100,8 @@ export default function Payouts() {
                 >
                   Withdraw to Bank
                 </button>
-                <div className="flex items-center gap-2 text-[10px] font-bold opacity-80 uppercase tracking-widest">
-                  <ShieldAlert size={14} className="text-yellow-400" /> Auto-settlement active
+                <div className="flex items-center gap-2 text-[10px] font-black opacity-80 uppercase tracking-widest bg-black/10 px-4 py-2 rounded-xl">
+                  <ShieldAlert size={14} className="text-yellow-400" /> Auto-Settlement Active
                 </div>
               </div>
             </div>

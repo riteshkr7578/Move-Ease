@@ -437,7 +437,7 @@ export default function MoverDashboard() {
                             <p className="text-2xl font-black text-blue-600">₹{(booking.estimatedCost || booking.totalPrice || 0).toLocaleString()}</p>
                           </div>
                           <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-bold text-gray-400">YOUR EARNING (90%)</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Your Share</p>
                             <p className="text-sm font-black text-green-600">
                               ₹{(booking.moverEarnings || (booking.estimatedCost * 0.9) || 0).toLocaleString()}
                             </p>
@@ -484,18 +484,20 @@ export default function MoverDashboard() {
                  <h2 className="text-2xl font-bold flex items-center gap-3 italic">
                     <Wallet className="text-blue-600" size={28} /> PAYOUTS & LEDGER
                  </h2>
-                 <div className="flex gap-4">
-                    <div className="text-right">
-                       <p className="text-[10px] font-bold text-gray-400 uppercase">Commission Owed</p>
-                       <p className="text-lg font-black text-red-500">₹{(moverData.wallet?.commissionOwed || 0).toLocaleString()}</p>
-                    </div>
-                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+              <div className="grid grid-cols-1 gap-6 mb-10">
                  <div className="p-8 bg-blue-50 dark:bg-blue-900/10 rounded-3xl border border-blue-100 dark:border-blue-800">
-                    <p className="text-[10px] font-bold text-blue-600 uppercase mb-4 tracking-widest">Available Balance (Online)</p>
-                    <h3 className="text-4xl font-black mb-6 dark:text-white">₹{(moverData.wallet?.balance || 0).toLocaleString()}</h3>
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <p className="text-[10px] font-bold text-blue-600 uppercase mb-1 tracking-widest">Available Balance (Online)</p>
+                        <h3 className="text-4xl font-black dark:text-white">₹{(moverData.wallet?.balance || 0).toLocaleString()}</h3>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest italic">Company Policy Auto-Deductions Enabled</p>
+                        <p className="text-[10px] font-bold text-green-600 underline cursor-help" title="Platform fees for cash jobs are automatically reconciled and deducted from your next online payout or ledger record.">How it works?</p>
+                      </div>
+                    </div>
                     <button 
                       onClick={async () => {
                         try {
@@ -506,24 +508,8 @@ export default function MoverDashboard() {
                           setMessage("Cashout failed.");
                         }
                       }}
-                      className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all"
+                      className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all focus:scale-[0.98]"
                     >Request Payout to Bank</button>
-                 </div>
-                 <div className="p-8 bg-red-50 dark:bg-red-900/10 rounded-3xl border border-red-100 dark:border-red-800">
-                    <p className="text-[10px] font-bold text-red-600 uppercase mb-4 tracking-widest">Commission Due (Cash Jobs)</p>
-                    <h3 className="text-4xl font-black mb-6 dark:text-white">₹{(moverData.wallet?.commissionOwed || 0).toLocaleString()}</h3>
-                    <button 
-                      onClick={async () => {
-                        try {
-                          await api.post("/api/movers/pay-commission");
-                          setMessage("Commission paid successfully!");
-                          fetchMoverProfile();
-                        } catch (e) {
-                          setMessage("Payment failed.");
-                        }
-                      }}
-                      className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-red-500/20 transition-all"
-                    >Clear Outstanding Commission</button>
                  </div>
               </div>
 

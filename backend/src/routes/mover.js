@@ -105,27 +105,63 @@ router.get("/cities/all", async (req, res) => {
 });
 
 // Cashout: Transfer wallet balance to bank (Simulation)
+// INCLUDES AUTO-SETTLEMENT: Deducts any outstanding commission (cash jobs) from online payout
 router.post("/cashout", auth, async (req, res) => {
   try {
     const mover = await Mover.findOne({ owner: req.user._id });
     if (!mover) return res.status(404).json({ msg: "Mover not found" });
 
-    const cashoutAmount = mover.wallet.balance;
-    if (cashoutAmount <= 0) return res.status(400).json({ msg: "No balance available for cashout" });
+    let payoutAmount = mover.wallet.balance;
+    const commissionDebt = mover.wallet.commissionOwed || 0;
 
-    // Deduct from balance
+    if (payoutAmount <= 0) return res.status(400).json({ msg: "No balance available for cashout" });
+
+    // Handle Auto-Deduction of Commission Debt
+    let finalPayout = payoutAmount;
+    if (commissionDebt > 0) {
+      if (payoutAmount >= commissionDebt) {
+        // Full debt covered by online balance
+        finalPayout = payoutAmount - commissionDebt;
+        mover.wallet.commissionOwed = 0;
+        
+        // Ledger entry for the internal deduction
+        mover.ledger.push({
+          amount: commissionDebt,
+          type: "deduction",
+          description: `Auto-reconciliation: Platform commission for cash jobs settled from online balance`
+        });
+      } else {
+        // Balance only partially covers debt
+        mover.wallet.commissionOwed = commissionDebt - payoutAmount;
+        finalPayout = 0;
+        
+        mover.ledger.push({
+            amount: payoutAmount,
+            type: "deduction",
+            description: `Partial reconciliation: ₹${payoutAmount.toLocaleString()} applied to platform debt`
+        });
+      }
+    }
+
+    // Process the remaining payout to bank
     mover.wallet.balance = 0;
     
-    // Add to ledger
-    mover.ledger.push({
-      amount: cashoutAmount,
-      type: "payout",
-      description: `Cashout processed (Payout of ₹${cashoutAmount.toLocaleString()})`
-    });
+    if (finalPayout > 0) {
+        mover.ledger.push({
+            amount: finalPayout,
+            type: "payout",
+            description: `Cashout processed (Net payout of ₹${finalPayout.toLocaleString()} to bank)`
+        });
+    }
 
     await mover.save();
-    res.json({ msg: "Cashout successful!", balance: 0, ledger: mover.ledger });
+    res.json({ 
+        msg: commissionDebt > 0 ? `Cashout successful! Net payout: ₹${finalPayout.toLocaleString()} (Commission settled)` : "Cashout successful!", 
+        balance: 0, 
+        ledger: mover.ledger 
+    });
   } catch (err) {
+    console.error("Cashout Error:", err);
     res.status(500).json({ msg: "Cashout failed" });
   }
 });
