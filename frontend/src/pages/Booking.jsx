@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../api"; // Assuming frontend/src/api.js is here
-import axios from "axios"; // keep axios for external calls if needed or remove if strictly using api
 
 export default function Booking() {
   const [searchParams] = useSearchParams();
@@ -16,8 +15,13 @@ export default function Booking() {
   const [estimatedCost, setEstimatedCost] = useState(null);
   const [mover, setMover] = useState(null);
 
-  const pickupRef = useRef(null);
-  const dropRef = useRef(null);
+  const pickupContainerRef = useRef(null);
+  const dropContainerRef = useRef(null);
+
+  const [pickupSuggestions, setPickupSuggestions] = useState([]);
+  const [dropSuggestions, setDropSuggestions] = useState([]);
+  const [showPickupDropdown, setShowPickupDropdown] = useState(false);
+  const [showDropDropdown, setShowDropDropdown] = useState(false);
 
   // Fetch selected mover details
   useEffect(() => {
@@ -40,23 +44,74 @@ export default function Booking() {
     fetchMover();
   }, [moverId, selectedMoveType]);
 
-  // Google Places Autocomplete
+  // Close suggestions dropdowns when clicking outside
   useEffect(() => {
-    if (!window.google) return;
-
-    const pickupAuto = new window.google.maps.places.Autocomplete(pickupRef.current);
-    const dropAuto = new window.google.maps.places.Autocomplete(dropRef.current);
-
-    pickupAuto.addListener("place_changed", () => {
-      const place = pickupAuto.getPlace();
-      if (place?.formatted_address) setPickup(place.formatted_address);
-    });
-
-    dropAuto.addListener("place_changed", () => {
-      const place = dropAuto.getPlace();
-      if (place?.formatted_address) setDrop(place.formatted_address);
-    });
+    const handleClickOutside = (event) => {
+      if (pickupContainerRef.current && !pickupContainerRef.current.contains(event.target)) {
+        setShowPickupDropdown(false);
+      }
+      if (dropContainerRef.current && !dropContainerRef.current.contains(event.target)) {
+        setShowDropDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Fetch autocomplete suggestions for Pickup Location
+  useEffect(() => {
+    if (!pickup || pickup.trim().length < 3) {
+      setTimeout(() => setPickupSuggestions([]), 0);
+      return;
+    }
+
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const res = await api.get("/api/google/autocomplete", {
+          params: { input: pickup }
+        });
+        setPickupSuggestions(res.data.predictions || []);
+      } catch (err) {
+        console.error("Autocomplete error:", err);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [pickup]);
+
+  // Fetch autocomplete suggestions for Drop Location
+  useEffect(() => {
+    if (!drop || drop.trim().length < 3) {
+      setTimeout(() => setDropSuggestions([]), 0);
+      return;
+    }
+
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const res = await api.get("/api/google/autocomplete", {
+          params: { input: drop }
+        });
+        setDropSuggestions(res.data.predictions || []);
+      } catch (err) {
+        console.error("Autocomplete error:", err);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [drop]);
+
+  const handleSelectPickup = (address) => {
+    setPickup(address);
+    setPickupSuggestions([]);
+    setShowPickupDropdown(false);
+  };
+
+  const handleSelectDrop = (address) => {
+    setDrop(address);
+    setDropSuggestions([]);
+    setShowDropDropdown(false);
+  };
+
 // Distance Calculator
 const calculateDistance = async () => {
   if (!pickup || !drop) {
@@ -131,7 +186,7 @@ const calculateDistance = async () => {
       }
 
       // If "pay_now", initialize Razorpay
-      handleRazorpayPayment(bookingId, token);
+      handleRazorpayPayment(bookingId);
 
     } catch (err) {
       console.error("Booking failed:", err);
@@ -139,7 +194,7 @@ const calculateDistance = async () => {
     }
   };
 
-  const handleRazorpayPayment = async (bookingId, token) => {
+  const handleRazorpayPayment = async (bookingId) => {
     try {
       // Create Razorpay Order
       const { data } = await api.post(
@@ -227,19 +282,59 @@ const calculateDistance = async () => {
           </select>
         </div>
 
-        <input
-          ref={pickupRef}
-          type="text"
-          placeholder="Pickup Location"
-          className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        />
+        <div ref={pickupContainerRef} className="relative">
+          <input
+            type="text"
+            placeholder="Pickup Location"
+            value={pickup}
+            onChange={(e) => {
+              setPickup(e.target.value);
+              setShowPickupDropdown(true);
+            }}
+            onFocus={() => setShowPickupDropdown(true)}
+            className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {showPickupDropdown && pickupSuggestions.length > 0 && (
+            <ul className="absolute left-0 right-0 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50 mt-1">
+              {pickupSuggestions.map((suggestion) => (
+                <li
+                  key={suggestion.place_id}
+                  onClick={() => handleSelectPickup(suggestion.description)}
+                  className="p-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer dark:text-white text-sm transition-colors border-b last:border-b-0 dark:border-gray-600"
+                >
+                  {suggestion.description}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-        <input
-          ref={dropRef}
-          type="text"
-          placeholder="Drop Location"
-          className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        />
+        <div ref={dropContainerRef} className="relative">
+          <input
+            type="text"
+            placeholder="Drop Location"
+            value={drop}
+            onChange={(e) => {
+              setDrop(e.target.value);
+              setShowDropDropdown(true);
+            }}
+            onFocus={() => setShowDropDropdown(true)}
+            className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {showDropDropdown && dropSuggestions.length > 0 && (
+            <ul className="absolute left-0 right-0 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50 mt-1">
+              {dropSuggestions.map((suggestion) => (
+                <li
+                  key={suggestion.place_id}
+                  onClick={() => handleSelectDrop(suggestion.description)}
+                  className="p-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer dark:text-white text-sm transition-colors border-b last:border-b-0 dark:border-gray-600"
+                >
+                  {suggestion.description}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <div className="space-y-1">
           <label className="text-sm font-semibold text-gray-600 dark:text-gray-400 ml-1 italic">

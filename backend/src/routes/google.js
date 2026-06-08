@@ -25,6 +25,28 @@ router.get("/distance", async (req, res) => {
     res.status(500).json({ msg: "Google API failed", error: err.message });
   }
 });
+router.get("/autocomplete", async (req, res) => {
+  try {
+    const { input } = req.query;
+    if (!input) {
+      return res.json({ predictions: [] });
+    }
 
+    const googleRes = await axios.get(
+      "https://maps.googleapis.com/maps/api/place/autocomplete/json",
+      {
+        params: {
+          input,
+          key: process.env.GOOGLE_MAPS_API_KEY,
+          types: "geocode", // optional: restrict suggestions to addresses/regions
+        },
+      }
+    );
+
+    res.json(googleRes.data);
+  } catch (err) {
+    res.status(500).json({ msg: "Google API failed", error: err.message });
+  }
+});
 
 module.exports = router;

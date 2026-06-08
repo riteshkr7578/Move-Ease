@@ -7,21 +7,21 @@ export default function Dashboard() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
 
- useEffect(() => {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
 
-  if (!token) return;
+    if (!token) return;
 
-  if (role) {
-    setUserRole(role.toLowerCase()); // ensure lowercase
-  }
+    if (role) {
+      setUserRole(role.toLowerCase()); // ensure lowercase
+    }
 
-  api
-    .get("/api/bookings")
-    .then((res) => setBookings(res.data))
-    .catch((err) => console.error("Bookings fetch failed:", err));
-}, []);
+    api
+      .get("/api/bookings")
+      .then((res) => setBookings(res.data))
+      .catch((err) => console.error("Bookings fetch failed:", err));
+  }, []);
 
   const token = localStorage.getItem("token");
 
@@ -98,15 +98,15 @@ export default function Dashboard() {
   });
 
   return (
-  
+
     <div className="max-w-4xl mx-auto mt-20 min-h-screen transition-colors duration-300">
-      
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold dark:text-white">My Bookings</h2>
-        
+
         <div className="flex flex-wrap gap-3">
           {/* Status Filter */}
-          <select 
+          <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="p-2 border rounded bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700 text-sm outline-none focus:ring-2 focus:ring-blue-500"
@@ -120,7 +120,7 @@ export default function Dashboard() {
           </select>
 
           {/* Payment Filter */}
-          <select 
+          <select
             value={paymentFilter}
             onChange={(e) => setPaymentFilter(e.target.value)}
             className="p-2 border rounded bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700 text-sm outline-none focus:ring-2 focus:ring-blue-500"
@@ -132,7 +132,7 @@ export default function Dashboard() {
           </select>
         </div>
       </div>
-      
+
 
 
 
@@ -141,15 +141,15 @@ export default function Dashboard() {
 
       {filteredBookings.length === 0 ? (
         <div className="text-center py-10 bg-white dark:bg-gray-800 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
-           <p className="text-gray-600 dark:text-gray-400">No bookings found matching filters!</p>
-           {(statusFilter !== "all" || paymentFilter !== "all") && (
-             <button 
-               onClick={() => { setStatusFilter("all"); setPaymentFilter("all"); }}
-               className="mt-2 text-blue-600 dark:text-blue-400 font-medium text-sm hover:underline"
-             >
-               Clear filters
-             </button>
-           )}
+          <p className="text-gray-600 dark:text-gray-400">No bookings found matching filters!</p>
+          {(statusFilter !== "all" || paymentFilter !== "all") && (
+            <button
+              onClick={() => { setStatusFilter("all"); setPaymentFilter("all"); }}
+              className="mt-2 text-blue-600 dark:text-blue-400 font-medium text-sm hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
@@ -177,28 +177,26 @@ export default function Dashboard() {
               {/* Status Badges */}
               <div className="flex gap-2 mt-2">
                 <p
-                  className={`px-3 py-1 rounded text-white text-sm font-medium ${
-                    b.status === "pending"
+                  className={`px-3 py-1 rounded text-white text-sm font-medium ${b.status === "pending"
                       ? "bg-yellow-500"
                       : b.status === "accepted"
-                      ? "bg-green-600"
-                      : b.status === "rejected"
-                      ? "bg-red-600"
-                      : "bg-gray-500"
-                  }`}
+                        ? "bg-green-600"
+                        : b.status === "rejected"
+                          ? "bg-red-600"
+                          : "bg-gray-500"
+                    }`}
                 >
                   Status: {b.status.toUpperCase()}
                 </p>
 
                 {b.paymentStatus && (
                   <p
-                    className={`px-3 py-1 rounded text-white text-sm font-medium ${
-                      b.paymentStatus === "paid"
+                    className={`px-3 py-1 rounded text-white text-sm font-medium ${b.paymentStatus === "paid"
                         ? "bg-blue-600"
                         : b.paymentStatus === "pay_later"
-                        ? "bg-orange-500"
-                        : "bg-gray-400"
-                    }`}
+                          ? "bg-orange-500"
+                          : "bg-gray-400"
+                      }`}
                   >
                     Payment: {b.paymentStatus === "pay_later" ? "PAY AT PICKUP" : b.paymentStatus.toUpperCase()}
                   </p>
@@ -214,68 +212,68 @@ export default function Dashboard() {
                 </p>
               )}
 
-           {/* ACTION BUTTONS */}
-           <div className="mt-3 flex gap-3">
-             {/* For Customer - Only Pending & Owned Booking */}
-             {userRole === "customer" && (
-               <div className="flex gap-3">
-                 {b.status === "pending" && (
-                   <button
-                     onClick={() => cancelBooking(b._id)}
-                     className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-medium transition-colors"
-                   >
-                     Cancel Booking
-                   </button>
-                 )}
-                 {(b.paymentStatus === "pending" || b.paymentStatus === "pay_later") && b.status !== "cancelled" && b.status !== "rejected" && b.paymentStatus !== "paid" && (
-                   <button
-                     onClick={() => handlePayNow(b._id)}
-                     className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition-colors"
-                   >
-                     Pay Now
-                   </button>
-                 )}
-               </div>
-             )}
+              {/* ACTION BUTTONS */}
+              <div className="mt-3 flex gap-3">
+                {/* For Customer - Only Pending & Owned Booking */}
+                {userRole === "customer" && (
+                  <div className="flex gap-3">
+                    {b.status === "pending" && (
+                      <button
+                        onClick={() => cancelBooking(b._id)}
+                        className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-medium transition-colors"
+                      >
+                        Cancel Booking
+                      </button>
+                    )}
+                    {(b.paymentStatus === "pending" || b.paymentStatus === "pay_later") && b.status !== "cancelled" && b.status !== "rejected" && b.paymentStatus !== "paid" && (
+                      <button
+                        onClick={() => handlePayNow(b._id)}
+                        className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition-colors"
+                      >
+                        Pay Now
+                      </button>
+                    )}
+                  </div>
+                )}
 
-             {/* For Mover */}
-             {userRole === "mover" && (
-               <div className="flex gap-2 w-full">
-                 {b.status === "pending" ? (
-                   <>
-                     <button
-                       onClick={() => updateStatus(b._id, "accepted")}
-                       className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-medium transition-colors"
-                     >
-                       Accept
-                     </button>
-                     <button
-                       onClick={() => updateStatus(b._id, "rejected")}
-                       className="px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-medium transition-colors"
-                     >
-                       Reject
-                     </button>
-                   </>
-                 ) : (
-                   <div className="flex items-center gap-2">
-                     <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Update Status:</span>
-                     <select
-                       value={b.status}
-                       onChange={(e) => updateStatus(b._id, e.target.value)}
-                       className="p-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                     >
-                       <option value="accepted">Accepted</option>
-                       <option value="completed">Completed</option>
-                       <option value="rejected">Rejected</option>
-                     </select>
-                   </div>
-                 )}
-               </div>
-             )}
-           </div>
-         </div>
-       ))}
-     </div>
+                {/* For Mover */}
+                {userRole === "mover" && (
+                  <div className="flex gap-2 w-full">
+                    {b.status === "pending" ? (
+                      <>
+                        <button
+                          onClick={() => updateStatus(b._id, "accepted")}
+                          className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-medium transition-colors"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => updateStatus(b._id, "rejected")}
+                          className="px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-medium transition-colors"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Update Status:</span>
+                        <select
+                          value={b.status}
+                          onChange={(e) => updateStatus(b._id, e.target.value)}
+                          className="p-2 border rounded bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="accepted">Accepted</option>
+                          <option value="completed">Completed</option>
+                          <option value="rejected">Rejected</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

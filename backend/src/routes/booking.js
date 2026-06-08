@@ -32,7 +32,7 @@ router.post("/", auth, async (req, res) => {
 
     // cost estimation (Total price the customer pays)
     const estimatedCost = mover.basePrice + distance * mover.pricePerKm;
-    
+
     // Platform fee deduction (Mover pays 10% fee from their earnings)
     const platformFee = Math.round(estimatedCost * 0.10);
     const moverEarnings = estimatedCost - platformFee;
@@ -72,8 +72,8 @@ router.get("/mover", auth, async (req, res) => {
     }
 
     // Use a more flexible query to ensure the ID match is found
-    const bookings = await Booking.find({ 
-      mover: { $in: [mover._id, mover._id.toString()] } 
+    const bookings = await Booking.find({
+      mover: { $in: [mover._id, mover._id.toString()] }
     })
       .populate("customer", "name email phone")
       .sort({ createdAt: -1 });
@@ -111,7 +111,7 @@ router.post("/razorpay/create-order", auth, async (req, res) => {
     };
 
     const order = await instance.orders.create(options);
-    
+
     booking.razorpayOrderId = order.id;
     await booking.save();
 
@@ -304,7 +304,7 @@ router.put("/:id/status", auth, async (req, res) => {
             paymentMethod: "cash",
             description: `Cash Job #${booking._id.toString().slice(-6)}: Total Received`
           });
-          
+
           const cashCommission = total * 0.1;
           moverProfile.ledger.push({
             booking: booking._id,
@@ -315,7 +315,7 @@ router.put("/:id/status", auth, async (req, res) => {
           });
 
           // Deduct from online balance to cover cash job commission
-          moverProfile.wallet.balance = (moverProfile.wallet.balance || 0) - cashCommission; 
+          moverProfile.wallet.balance = (moverProfile.wallet.balance || 0) - cashCommission;
           moverProfile.wallet.commissionOwed = (moverProfile.wallet.commissionOwed || 0) + cashCommission;
         }
 
