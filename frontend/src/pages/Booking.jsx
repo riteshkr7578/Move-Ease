@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../api"; // Assuming frontend/src/api.js is here
 import axios from "axios"; // keep axios for external calls if needed or remove if strictly using api
+import { loadGoogleMaps } from "../utils/googleMaps";
 
 export default function Booking() {
   const [searchParams] = useSearchParams();
@@ -40,22 +41,42 @@ export default function Booking() {
     fetchMover();
   }, [moverId, selectedMoveType]);
 
-  // Google Places Autocomplete
+  // Google Places Autocomplete (PlaceAutocompleteElement)
   useEffect(() => {
-    if (!window.google) return;
+    let pickupAuto = null;
+    let dropAuto = null;
+    let cancelled = false;
 
-    const pickupAuto = new window.google.maps.places.Autocomplete(pickupRef.current);
-    const dropAuto = new window.google.maps.places.Autocomplete(dropRef.current);
+    loadGoogleMaps()
+      .then((google) => {
+        if (cancelled || !pickupRef.current || !dropRef.current) return;
 
-    pickupAuto.addListener("place_changed", () => {
-      const place = pickupAuto.getPlace();
-      if (place?.formatted_address) setPickup(place.formatted_address);
-    });
+        pickupAuto = new google.maps.places.PlaceAutocompleteElement();
+        dropAuto = new google.maps.places.PlaceAutocompleteElement();
 
-    dropAuto.addListener("place_changed", () => {
-      const place = dropAuto.getPlace();
-      if (place?.formatted_address) setDrop(place.formatted_address);
-    });
+        pickupAuto.placeholder = "Pickup Location";
+        dropAuto.placeholder = "Drop Location";
+
+        pickupAuto.addEventListener("gmp-placechange", () => {
+          const place = pickupAuto.value;
+          if (place?.formattedAddress) setPickup(place.formattedAddress);
+        });
+
+        dropAuto.addEventListener("gmp-placechange", () => {
+          const place = dropAuto.value;
+          if (place?.formattedAddress) setDrop(place.formattedAddress);
+        });
+
+        pickupRef.current.appendChild(pickupAuto);
+        dropRef.current.appendChild(dropAuto);
+      })
+      .catch((err) => console.error("Google Maps load error:", err));
+
+    return () => {
+      cancelled = true;
+      pickupAuto?.remove?.();
+      dropAuto?.remove?.();
+    };
   }, []);
 // Distance Calculator
 const calculateDistance = async () => {
@@ -227,19 +248,9 @@ const calculateDistance = async () => {
           </select>
         </div>
 
-        <input
-          ref={pickupRef}
-          type="text"
-          placeholder="Pickup Location"
-          className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        />
+        <div ref={pickupRef} className="w-full" />
 
-        <input
-          ref={dropRef}
-          type="text"
-          placeholder="Drop Location"
-          className="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        />
+        <div ref={dropRef} className="w-full" />
 
         <div className="space-y-1">
           <label className="text-sm font-semibold text-gray-600 dark:text-gray-400 ml-1 italic">

@@ -36,3 +36,8 @@
     @apply bg-gray-900 text-gray-100;
   }
 }
+
+gmpx-place-autocomplete-element {
+  width: 100%;
+  font-family: inherit;
+}
