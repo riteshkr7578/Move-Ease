@@ -51,8 +51,8 @@ export default function Booking() {
       .then((google) => {
         if (cancelled || !pickupRef.current || !dropRef.current) return;
 
-        pickupAuto = new google.maps.places.PlaceAutocompleteElement();
-        dropAuto = new google.maps.places.PlaceAutocompleteElement();
+        pickupAuto = new google.places.PlaceAutocompleteElement();
+        dropAuto = new google.places.PlaceAutocompleteElement();
 
         pickupAuto.placeholder = "Pickup Location";
         dropAuto.placeholder = "Drop Location";
